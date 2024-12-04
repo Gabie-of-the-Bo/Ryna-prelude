@@ -1,5 +1,27 @@
 import * from array_extensions;
 
+// StringRef interface
+
+interface StringRef {
+    fn as_ref(obj: Self) -> &String;
+}
+
+fn as_ref(obj: String) -> &String {
+    return obj.demut();
+}
+
+fn as_ref(obj: &String) -> &String {
+    return obj;
+}
+
+fn as_ref(obj: @String) -> &String {
+    return obj.demut();
+}
+
+implement StringRef for String;
+implement StringRef for &String;
+implement StringRef for @String;
+
 // Code point iterator
 
 @doc(
@@ -16,6 +38,14 @@ fn iterator(it: CodePointIterator) -> CodePointIterator {
     return move(it);
 }
 
+fn iterator(it: &CodePointIterator) -> CodePointIterator {
+    return *it;
+}
+
+fn iterator(it: @CodePointIterator) -> CodePointIterator {
+    return *it;
+}
+
 fn next(it: @CodePointIterator) -> Int {
     let res = it.str.code_point_at(*it.pos);
 
@@ -29,14 +59,16 @@ fn is_consumed(it: @CodePointIterator) -> Bool {
 }
 
 implement Iterable<CodePointIterator, Int> for CodePointIterator;
+implement Iterable<CodePointIterator, Int> for &CodePointIterator;
+implement Iterable<CodePointIterator, Int> for @CodePointIterator;
 
 @doc(
     "Get an iterator over code points.",
     str: "Reference to the String that you want to iterate.",
     "A CodePointIterator over `str`."
 )
-fn code_points(str: &String) -> CodePointIterator {
-    return CodePointIterator(str, 0);
+fn<T> code_points(str: 'T [StringRef]) -> CodePointIterator {
+    return CodePointIterator(str.as_ref(), 0);
 }
 
 // Algorithms
@@ -47,8 +79,8 @@ fn code_points(str: &String) -> CodePointIterator {
     start: "Start substring to check.",
     "`true` if `iter` starts with `start`, else `false`."
 )
-fn starts_with(iter: CodePointIterator, start: &String) -> Bool {
-    let start_cp = start.code_points();
+fn<T> starts_with(iter: CodePointIterator, start: 'T [StringRef]) -> Bool {
+    let start_cp = start.as_ref().code_points();
 
     for i in move(iter) {
         if start_cp.is_consumed() {
@@ -71,8 +103,8 @@ fn starts_with(iter: CodePointIterator, start: &String) -> Bool {
     start: "Start substring to check.",
     "`true` if `iter` starts with `start`, else `false`."
 )
-fn starts_with(str: &String, start: &String) -> Bool {
-    return starts_with(str.code_points(), start);
+fn<T, G> starts_with(str: 'T [StringRef], start: 'G [StringRef]) -> Bool {
+    return starts_with(str.as_ref().code_points(), start.as_ref());
 }
 
 @doc(
@@ -81,11 +113,11 @@ fn starts_with(str: &String, start: &String) -> Bool {
     haystack: "Substring to check.",
     "`true` if `iter` contains `haystack`, else `false`."
 )
-fn contains(str: &String, haystack: &String) -> Bool {
-    let str_cp = str.code_points();
+fn<T, G> contains(str: 'T [StringRef], haystack: 'G [StringRef]) -> Bool {
+    let str_cp = str.as_ref().code_points();
 
     while !str_cp.is_consumed() {
-        if starts_with(*str_cp, haystack) {
+        if starts_with(*str_cp, haystack.as_ref()) {
             return true;
         }
 
@@ -102,17 +134,17 @@ fn contains(str: &String, haystack: &String) -> Bool {
     rep: "String to use when replacing `haystack`.",
     "The modified string."
 )
-fn replace(str: &String, haystack: &String, rep: String) -> String {
-    let res = arr_with_capacity<Int>(str.len());
-    let str_cp = str.code_points();
+fn<T, G, K> replace(str: 'T [StringRef], haystack: 'G [StringRef], rep: 'K [StringRef]) -> String {
+    let res = arr_with_capacity<Int>(str.as_ref().len());
+    let str_cp = str.as_ref().code_points();
 
     while !str_cp.is_consumed() {
-        if starts_with(*str_cp, haystack) {
-            for i in haystack.code_points() {
+        if starts_with(*str_cp, haystack.as_ref()) {
+            for i in haystack.as_ref().code_points() {
                 str_cp.next();
             }
 
-            res.push_all(rep.utf8_array());
+            res.push_all(rep.as_ref().utf8_array());
 
         } else {
             res.push(str_cp.next());
@@ -120,6 +152,56 @@ fn replace(str: &String, haystack: &String, rep: String) -> String {
     }
 
     return utf8_to_str(res);
+}
+
+@doc(
+    "Breaks `str` into pieces separated by `separator`",
+    str: "String to split.",
+    separator: "String between each part.",
+    "An array with all the parts."
+)
+fn<T, G> split(str: 'T [StringRef], separator: 'G [StringRef]) -> Array<String> {
+    let res = arr<String>();
+    let curr_str = arr<Int>();
+    let str_cp = str.as_ref().code_points();
+
+    while !str_cp.is_consumed() {
+        if starts_with(*str_cp, separator.as_ref()) {
+            for i in separator.as_ref().code_points() {
+                str_cp.next();
+            }
+
+            res.push(utf8_to_str(curr_str));
+            curr_str = arr<Int>();
+
+        } else {
+            curr_str.push(str_cp.next());
+        }
+    }
+
+    if curr_str.len() > 0 {
+        res.push(utf8_to_str(curr_str)); 
+    }
+
+    return move(res);
+}
+
+@doc(
+    "Parses an string as an Int (base 10). Skips non-numeric characters and does not panic.",
+    str: "String to parse.",
+    "An integer obtained from `str`."
+)
+fn<T> parse_int(str: 'T [StringRef]) -> Int {
+    let res = 0;
+    let str_cp = str.as_ref().code_points();
+
+    for i in str_cp {
+        if i >= 48 && i <= 57 {
+            res = (res * 10) + (i - 48);
+        }
+    }
+
+    return move(res);
 }
 
 /*
@@ -161,4 +243,20 @@ fn test_replace() -> Bool {
     let new = str.demut().replace("test".ref(), "not a test");
 
     return new == "This is a not a test";
+}
+
+@test
+fn test_split() -> Bool {
+    let str = "This is a test";
+    let arr = str.demut().split(" ".ref());
+
+    return arr[0] == "This" && arr[1] == "is" && arr[2] == "a" && arr[3] == "test";
+}
+
+@test
+fn test_parse_int() -> Bool {
+    let str1 = "5631";
+    let str2 = "00gd64";
+
+    return str1.demut().parse_int() == 5631 && str2.demut().parse_int() == 64;
 }

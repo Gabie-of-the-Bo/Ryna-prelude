@@ -1,7 +1,7 @@
 ---
 module_name: string_extensions
 version: 0.1.0
-hash: 6539ef837e5662207ceacbd87424b29c
+hash: 640cb7c5d60cd3078965585238389a4a
 module_paths:
   - "${MODULES_PATH}"
 modules:

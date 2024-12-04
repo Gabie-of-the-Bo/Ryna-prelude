@@ -1,5 +1,27 @@
 import * from range;
 
+// ArrayRef interface for generic definitions
+
+interface ArrayRef<T> {
+    fn as_ref(obj: Self) -> &Array<'T>;
+}
+
+fn<T> as_ref(obj: Array<'T>) -> &Array<'T> {
+    return obj.demut();
+}
+
+fn<T> as_ref(obj: &Array<'T>) -> &Array<'T> {
+    return obj;
+}
+
+fn<T> as_ref(obj: @Array<'T>) -> &Array<'T> {
+    return obj.demut();
+}
+
+implement<T> ArrayRef<'T> for Array<'T>;
+implement<T> ArrayRef<'T> for &Array<'T>;
+implement<T> ArrayRef<'T> for @Array<'T>;
+
 // Construction syntax
 
 @doc(
@@ -166,8 +188,8 @@ fn<T> insert_all(array: @Array<'T>, other: Array<'T>, idx: Int) {
     elem: "the element to check.",
     "`true` if `array` contains `elem`, else `false`."
 )
-fn<T> contains(array: &Array<'T>, elem: &'T) -> Bool {
-    for i in array {
+fn<T, G> contains(array: 'T [ArrayRef<'G>], elem: &'G) -> Bool {
+    for i in array.as_ref() {
         if i == elem {
             return true;
         }
@@ -182,10 +204,10 @@ fn<T> contains(array: &Array<'T>, elem: &'T) -> Bool {
     elem: "the element to look for.",
     "The index of index of `elem` in `array` or -1 if it does not exist."
 )
-fn<T> index_of(array: &Array<'T>, elem: &'T) -> Int {
+fn<T, G> index_of(array: 'T [ArrayRef<'G>], elem: &'G) -> Int {
     let idx = 0;
 
-    for i in array {
+    for i in array.as_ref() {
         if i == elem {
             return move(idx);
         }
@@ -202,10 +224,10 @@ fn<T> index_of(array: &Array<'T>, elem: &'T) -> Int {
     f: "the function to use to transform the elements.",
     "The transformed array."
 )
-fn<T, G> transform(array: @Array<'T>, f: 'T => 'G) -> Array<'G> {
+fn<T, G, K> transform(array: 'T [ArrayRef<'K>], f: 'K => 'G) -> Array<'G> {
     let res = arr_with_capacity<'G>(array.len());
 
-    for i in array {
+    for i in array.as_ref() {
         res.push(f(*i));
     }
 
@@ -271,8 +293,8 @@ fn<T> reverse(array: @Array<'T>) -> @Array<'T> {
     base: "The base element. For example, this would be 0 for sums and 1 for products.",
     "The result of the reduction."
 )
-fn<T> reduce(array: @Array<'T>, base: 'T, operation: ('T, 'T) => 'T) -> 'T {
-    for i in array {
+fn<T, G, K> reduce(array: 'G [ArrayRef<'K>], base: 'K, operation: ('K, 'K) => 'K) -> 'T {
+    for i in array.as_ref() {
         base := operation(*base, *i);
     }
 
@@ -356,9 +378,35 @@ fn<T> sort_by(array: @Array<'T>, crit: (&'T) => Float) {
     quicksort_rec_by(array, 0, array.len(), *crit);
 }
 
+// Operations
+
+op<T1, G1, T2, G2> (a: 'T1 [ArrayRef<'G1>]) == (b: 'T2 [ArrayRef<'G2>]) -> Bool {
+    let idx = 0;
+    let a_ref = a.as_ref();
+    let b_ref = b.as_ref();
+
+    if a_ref.len() != b_ref.len() {
+        return false;
+    }
+
+    for i in a_ref {
+        if i != b_ref[*idx] {
+            return false;
+        }
+        
+        idx.inc();
+    }
+
+    return true;
+}
+
+op<T1, G1, T2, G2> (a: 'T1 [ArrayRef<'G1>]) != (b: 'T2 [ArrayRef<'G2>]) -> Bool {
+    return !(a.as_ref() == b.as_ref());
+}
+
 // Printable interface
 
-fn<T> print(array: Array<'T [Printable]>) {
+fn<T> print(array: &Array<'T [Printable]>) {
     let idx = 0;
 
     print("[");
@@ -376,7 +424,17 @@ fn<T> print(array: Array<'T [Printable]>) {
     print("]");
 }
 
+fn<T> print(array: Array<'T [Printable]>) {
+    print(array.demut());
+}
+
+fn<T> print(array: @Array<'T [Printable]>) {
+    print(array.demut());
+}
+
 implement<T> Printable for Array<'T [Printable]>;
+implement<T> Printable for &Array<'T [Printable]>;
+implement<T> Printable for @Array<'T [Printable]>;
 
 /*
     UNIT TESTS
