@@ -28,6 +28,8 @@ class HashSet<V> {
     num_elems: Int;
 }
 
+// Implementation
+
 fn<T> init(set: @HashSet<'T [Hashable]>, size: Int) {
     let _buckets = set.buckets;
     _buckets.reserve(*size);
@@ -124,12 +126,20 @@ fn<T> contains(set: &HashSet<'T [Hashable]>, elem: &'T) -> Bool {
     return false;
 }
 
+fn<T> contains(set: @HashSet<'T [Hashable]>, elem: &'T) -> Bool {
+    return set.demut().contains(elem);
+}
+
 @doc(
     "Returns the number of elements in `set`.",
     set: "HashSet to check",
     "The number of elements in `set`."
 )
 fn<T> len(set: &HashSet<'T [Hashable]>) -> Int {
+    return *set.num_elems;
+}
+
+fn<T> len(set: @HashSet<'T [Hashable]>) -> Int {
     return *set.num_elems;
 }
 
@@ -146,9 +156,9 @@ fn<T> iterator(it: HashSetIterator<'T>) -> HashSetIterator<'T> {
 }
 
 fn<T> next(it: @HashSetIterator<'T>) -> 'T {
-    let b = it.bucket();
-    let i = it.idx();
-    let s = it.set();
+    let b = it.bucket;
+    let i = it.idx;
+    let s = it.set;
 
     let curr_bucket = (s.buckets)[*b];
     let res = curr_bucket[*i];
@@ -175,7 +185,7 @@ fn<T> next(it: @HashSetIterator<'T>) -> 'T {
 }
 
 fn<T> is_consumed(it: @HashSetIterator<'T>) -> Bool {
-    return it.bucket() == it.set().buckets.len();
+    return it.bucket == it.set.buckets.len();
 }
 
 fn<T> iterator(set: &HashSet<'T>) -> HashSetIterator<'T> {

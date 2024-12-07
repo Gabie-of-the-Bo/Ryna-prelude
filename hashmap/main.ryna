@@ -140,7 +140,21 @@ fn<K, V> remove(map: @HashMap<'K [Hashable], 'V>, key: 'K) {
     key: "`key` to look for",
     "The associated value or an empty value."
 )
-fn<K, V> get(map: @HashMap<'K [Hashable], 'V>, key: @'K) -> () | @'V {
+fn<K, V> get(map: &HashMap<'K [Hashable], 'V>, key: &'K) -> () | &'V {
+    let b = map.buckets;
+    let size = b.len();
+    let pos = hash(*key) % size;
+
+    for i in b[*pos] {
+        if i.get_0() == key {
+            return i.get_1();
+        }
+    }
+
+    return ();
+}
+
+fn<K, V> get(map: @HashMap<'K [Hashable], 'V>, key: &'K) -> () | @'V {
     let b = map.buckets;
     let size = b.len();
     let pos = hash(*key) % size;
@@ -160,7 +174,7 @@ fn<K, V> get(map: @HashMap<'K [Hashable], 'V>, key: @'K) -> () | @'V {
     key: "`key` to look for",
     "`true` if `map` contains `key`, else `false`."
 )
-fn<K, V> contains(map: @HashMap<'K [Hashable], 'V>, key: @'K) -> Bool {
+fn<K, V> contains(map: &HashMap<'K [Hashable], 'V>, key: &'K) -> Bool {
     let b = map.buckets;
     let size = b.len();
     let pos = hash(*key) % size;
@@ -174,12 +188,20 @@ fn<K, V> contains(map: @HashMap<'K [Hashable], 'V>, key: @'K) -> Bool {
     return false;
 }
 
+fn<K, V> contains(map: @HashMap<'K [Hashable], 'V>, key: &'K) -> Bool {
+    return map.demut().contains(key);
+}
+
 @doc(
     "Returns the number of elements in `map`.",
     map: "HashMap to check",
     "The number of elements in `map`."
 )
 fn<K, V> len(map: &HashMap<'K [Hashable], 'V>) -> Int {
+    return *map.num_elems;
+}
+
+fn<K, V> len(map: @HashMap<'K [Hashable], 'V>) -> Int {
     return *map.num_elems;
 }
 
@@ -196,9 +218,9 @@ fn<K, V> iterator(it: HashMapIterator<'K, 'V>) -> HashMapIterator<'K, 'V> {
 }
 
 fn<K, V> next(it: @HashMapIterator<'K, 'V>) -> ('K, 'V) {
-    let b = it.bucket();
-    let i = it.idx();
-    let s = it.map();
+    let b = it.bucket;
+    let i = it.idx;
+    let s = it.map;
 
     let curr_bucket = (s.buckets)[*b];
     let res = curr_bucket[*i];
@@ -225,7 +247,7 @@ fn<K, V> next(it: @HashMapIterator<'K, 'V>) -> ('K, 'V) {
 }
 
 fn<K, V> is_consumed(it: @HashMapIterator<'K, 'V>) -> Bool {
-    return it.bucket() == it.map().buckets.len();
+    return it.bucket == it.map.buckets.len();
 }
 
 fn<K, V> iterator(map: &HashMap<'K, 'V>) -> HashMapIterator<'K, 'V> {
@@ -292,9 +314,9 @@ fn hashmap_syntax_test() -> Bool {
         2: "Test 3"
     };
     
-    return res.contains(1.mut()) && res.get(1.mut()).as<@String>() == "Test 1" &&
-           res.contains(2.mut()) && res.get(2.mut()).as<@String>() == "Test 3" &&
-           res.contains(7.mut()) && res.get(7.mut()).as<@String>() == "Test 2";
+    return res.contains(1.ref()) && res.get(1.ref()).as<@String>() == "Test 1" &&
+           res.contains(2.ref()) && res.get(2.ref()).as<@String>() == "Test 3" &&
+           res.contains(7.ref()) && res.get(7.ref()).as<@String>() == "Test 2";
 }
 
 @test
@@ -306,7 +328,7 @@ fn hashmap_add_test() -> Bool {
     }
 
     for i in range(100) {
-        if !res.contains(i) {
+        if !res.contains(i.demut()) {
             return false;
         }
     }
@@ -327,13 +349,13 @@ fn hashmap_remove_test() -> Bool {
     }
 
     for i in range(50) {
-        if !res.contains(i) {
+        if !res.contains(i.demut()) {
             return false;
         }
     }
 
     for i in range(50, 100) {
-        if res.contains(i) {
+        if res.contains(i.demut()) {
             return false;
         }
     }
