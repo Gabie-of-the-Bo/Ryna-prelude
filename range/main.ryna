@@ -1,3 +1,25 @@
+// IntBase interface
+
+interface IntBase {
+    fn value(obj: Self) -> Int;
+}
+
+fn value(n: Int) -> Int {
+    return move(n);
+}
+
+fn value(n: &Int) -> Int {
+    return *n;
+}
+
+fn value(n: @Int) -> Int {
+    return *n;
+}
+
+implement IntBase for Int;
+implement IntBase for &Int;
+implement IntBase for @Int;
+
 // Simple range
 
 @doc(
@@ -28,69 +50,69 @@ fn is_consumed(it: @Range) -> Bool {
 implement Iterable<Range, Int> for Range;
 
 @doc(
-    "Returns a range from 0 to `to` (last value not included).",
-    to: "Final value to iterate.",
+    "Returns a range from 0 to `end` (last value not included).",
+    end: "Final value to iterate.",
     "The Range value."
 )
-fn range(to: Int) -> Range {
-    return Range(0, *to);
+fn<T> range(end: 'T [IntBase]) -> Range {
+    return Range(0, end.value());
 }
 
 @doc(
-    "Returns a range from 'from' to `to` (last value not included).",
-    from: "Starting value.",
-    to: "Final value to iterate.",
+    "Returns a range from `start` to `end` (last value not included).",
+    start: "Starting value.",
+    end: "Final value to iterate.",
     "The Range value."
 )
-fn range(from: Int, to: Int) -> Range {
-    return Range(*from, *to);
+fn<T, G> range(start: 'T [IntBase], end: 'G [IntBase]) -> Range {
+    return Range(start.value(), end.value());
 }
 
 @doc(
-    "Returns a range from 0 to `to` (last value included).",
-    to: "Final value to iterate.",
+    "Returns a range from 0 to `end` (last value included).",
+    end: "Final value to iterate.",
     "The Range value."
 )
-fn irange(to: Int) -> Range {
-    return Range(0, *to + 1);
+fn<T> irange(end: 'T [IntBase]) -> Range {
+    return Range(0, end.value() + 1);
 }
 
 @doc(
-    "Returns a range from 'from' to `to` (last value included).",
-    from: "Starting value.",
-    to: "Final value to iterate.",
+    "Returns a range from `start` to `end` (last value included).",
+    start: "Starting value.",
+    end: "Final value to iterate.",
     "The Range value."
 )
-fn irange(from: Int, to: Int) -> Range {
-    return Range(*from, *to + 1);
+fn<T, G> irange(start: 'T [IntBase], end: 'G [IntBase]) -> Range {
+    return Range(start.value(), end.value() + 1);
 }
 
 // Skip range
 
 @doc(
-    "Class that represents a lazy range of values with a skip value.",
+    "Class that represents a lazy range of values with a step value.",
     current: "Current integer.",
     end: "Final value to iterate.",
     skip: "Number of values to skip on each iteration."
 )
-class SkipRange {
+class StepRange {
     current: Int;
     end: Int;
     skip: Int;
 }
 
-fn iterator(it: SkipRange) -> SkipRange {
+fn iterator(it: StepRange) -> StepRange {
     return *it;
 }
 
-fn next(it: @SkipRange) -> Int {
+fn next(it: @StepRange) -> Int {
     let curr: @Int = it.current;
     curr := curr + it.skip;
 
     return *curr - it.skip;
 }
 
-fn is_consumed(it: @SkipRange) -> Bool {
+fn is_consumed(it: @StepRange) -> Bool {
     if it.skip > 0 {
         return it.current >= it.end;
     }
@@ -98,54 +120,54 @@ fn is_consumed(it: @SkipRange) -> Bool {
     return it.current <= it.end;
 }
 
-implement Iterable<SkipRange, Int> for SkipRange;
+implement Iterable<StepRange, Int> for StepRange;
 
 @doc(
-    "Returns a range from 'from' to `to` (last value included).",
-    from: "Starting value.",
-    to: "Final value to iterate.",
-    skip: "Number of values to skip on each iteration.",
+    "Returns a range from `start` to `end` (last value included).",
+    start: "Starting value.",
+    end: "Final value to iterate.",
+    step: "Number of values to skip on each iteration.",
     "The Range value."
 )
-fn range(from: Int, to: Int, skip: Int) -> SkipRange {
-    return SkipRange(*from, *to, *skip);
+fn<T, G, K> range(start: 'T [IntBase], end: 'G [IntBase], step: 'K [IntBase]) -> StepRange {
+    return StepRange(start.value(), end.value(), step.value());
 }
 
 @doc(
-    "Returns a range from `to` - 1 to 0 (last value included).",
-    to: "Inital value to iterate.",
+    "Returns a range from `end` - 1 to 0 (last value included).",
+    end: "Inital value to iterate.",
     "The Range value."
 )
-fn rev_range(to: Int) -> SkipRange {
-    return rev_range(0, move(to));
+fn<T> rev_range(end: 'T [IntBase]) -> StepRange {
+    return rev_range(0, end.value());
 }
 
 @doc(
-    "Returns a range from `to` - 1 to 'from' (last value included).",
-    from: "Starting value.",
-    to: "Final value to iterate.",
+    "Returns a range from `end` - 1 to `start` (last value included).",
+    start: "Starting value.",
+    end: "Final value to iterate.",
     "The Range value."
 )
-fn rev_range(from: Int, to: Int) -> SkipRange {
-    from := from - 1;
-    to := to - 1;
+fn<T, G> rev_range(start: 'T [IntBase], end: 'G [IntBase]) -> StepRange {
+    let _start = start.value() - 1;
+    let _end = end.value() - 1;
 
-    return SkipRange(*to, *from, -1);
+    return StepRange(move(_end), move(_start), -1);
 }
 
 @doc(
-    "Returns a range from 'from' to `to` (last value included) with a skip value.",
-    from: "Starting value.",
-    to: "Final value to iterate.",
-    skip: "Number of values to skip on each iteration.",
+    "Returns a range from `start` to `end` (last value included) with a step value.",
+    start: "Starting value.",
+    end: "Final value to iterate.",
+    step: "Number of values to skip on each iteration.",
     "The Range value."
 )
-fn irange(from: Int, to: Int, skip: Int) -> SkipRange {
-    if skip > 0 {
-        return SkipRange(*from, *to + 1, *skip);
+fn<T, G, K> irange(start: 'T [IntBase], end: 'G [IntBase], step: 'K [IntBase]) -> StepRange {
+    if step.value() > 0 {
+        return StepRange(start.value(), end.value() + 1, step.value());
     }
 
-    return SkipRange(*from, *to - 1, *skip);
+    return StepRange(start.value(), end.value() - 1, step.value());
 }
 
 @doc(
@@ -153,7 +175,7 @@ fn irange(from: Int, to: Int, skip: Int) -> SkipRange {
     r: "Range to reverse.",
     "The reversed Range value."
 )
-fn rev(r: Range) -> SkipRange {
+fn rev(r: Range) -> StepRange {
     return rev_range(move(r.current), move(r.end));
 }
 
