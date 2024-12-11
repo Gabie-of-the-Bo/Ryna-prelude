@@ -1,5 +1,4 @@
-import interface Hashable from hash;
-import fn hash from hash;
+import * from hash;
 import fn { iterator, next, is_consumed, range } from range;
 
 // Syntax definition
@@ -166,6 +165,26 @@ fn<K, V> get(map: @HashMap<'K [Hashable], 'V>, key: &'K) -> () | @'V {
     }
 
     return ();
+}
+
+fn<K, V> get_checked(map: @HashMap<'K [Hashable], 'V>, key: &'K) -> @'V {
+    let res = map.get(key);
+
+    if !res.is<@'V>() {
+        panic("Unable to find key");
+    }
+
+    return res.as<@'V>();
+}
+
+fn<K, V> get_checked(map: &HashMap<'K [Hashable], 'V>, key: &'K) -> &'V {
+    let res = map.get(key);
+
+    if !res.is<&'V>() {
+        panic("Unable to find key");
+    }
+
+    return res.as<&'V>();
 }
 
 @doc(

@@ -1,5 +1,4 @@
-import interface Hashable from hash;
-import fn hash from hash;
+import * from hash;
 import fn { iterator, next, is_consumed, range } from range;
 import * from array_extensions;
 

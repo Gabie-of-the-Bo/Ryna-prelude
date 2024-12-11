@@ -1,5 +1,10 @@
 ---
 module_name: hash
 version: 0.1.0
-hash: 357ea7bcc1d17768a2f1fcca5d1243d0
-modules: {}
+hash: a561abfd53041af5dac5fcde0c9dac98
+module_paths:
+  - "${MODULES_PATH}"
+modules:
+  tuples:
+    path: "${MODULES_PATH}/prelude/tuples"
+    version: 0.1.0

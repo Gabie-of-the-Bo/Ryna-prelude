@@ -1,3 +1,5 @@
+import * from tuples;
+
 interface Hashable {
     fn hash(obj: Self) -> Int;
 }
@@ -17,16 +19,40 @@ fn hash(n: Bool) -> Int {
 implement Hashable for Int;
 implement Hashable for Bool;
 
+fn combine_hashes(a: Int, b: Int) -> Int {
+    let res = 17;
+    res = res * 31 + a;
+    res = res * 31 + b;
+    return move(res);
+}
+
+fn combine_hashes(a: Int, b: Int, c: Int) -> Int {
+    let res = 17;
+    res = res * 31 + a;
+    res = res * 31 + b;
+    res = res * 31 + c;
+    return move(res);
+}
+
+fn combine_hashes(a: Int, b: Int, c: Int, d: Int) -> Int {
+    let res = 17;
+    res = res * 31 + a;
+    res = res * 31 + b;
+    res = res * 31 + c;
+    res = res * 31 + d;
+    return move(res);
+}
+
 fn<T1, T2> hash(obj: ('T1 [Hashable], 'T2 [Hashable])) -> Int {
-    return hash(*obj.get_0()) * hash(*obj.get_1());
+    return combine_hashes(hash(*obj.get_0()), hash(*obj.get_1()));
 }
 
 fn<T1, T2, T3> hash(obj: ('T1 [Hashable], 'T2 [Hashable], 'T3 [Hashable])) -> Int {
-    return hash(*obj.get_0()) * hash(*obj.get_1()) * hash(*obj.get_2());
+    return combine_hashes(hash(*obj.get_0()), hash(*obj.get_1()), hash(*obj.get_2()));
 }
 
 fn<T1, T2, T3, T4> hash(obj: ('T1 [Hashable], 'T2 [Hashable], 'T3 [Hashable], 'T4 [Hashable])) -> Int {
-    return hash(*obj.get_0()) * hash(*obj.get_1()) * hash(*obj.get_2()) * hash(*obj.get_3());
+    return combine_hashes(hash(*obj.get_0()), hash(*obj.get_1()), hash(*obj.get_2()), hash(*obj.get_3()));
 }
 
 implement<T1, T2> Hashable for ('T1 [Hashable], 'T2 [Hashable]);

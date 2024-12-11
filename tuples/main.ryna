@@ -1,0 +1,91 @@
+// Tuples of size 2
+
+interface TupleRef2<T0, T1> {
+    fn as_ref(t: Self) -> &('T0, 'T1);
+}
+
+fn<T0, T1> as_ref(t: ('T0, 'T1)) -> &('T0, 'T1) {
+    return t.demut();
+}
+
+fn<T0, T1> as_ref(t: @('T0, 'T1)) -> &('T0, 'T1) {
+    return t.demut();
+}
+
+fn<T0, T1> as_ref(t: &('T0, 'T1)) -> &('T0, 'T1) {
+    return t;
+}
+
+implement<T0, T1> TupleRef2<'T0, 'T1> for ('T0, 'T1);
+implement<T0, T1> TupleRef2<'T0, 'T1> for &('T0, 'T1);
+implement<T0, T1> TupleRef2<'T0, 'T1> for @('T0, 'T1);
+
+op<TT0, TT1, T0, T1> (a: 'TT0 [TupleRef2<'T0, 'T1>]) == (b: 'TT1 [TupleRef2<'T0, 'T1>]) -> Bool {
+    return a.as_ref().get_0() == b.as_ref().get_0() && a.as_ref().get_1() == b.as_ref().get_1();
+}
+
+op<TT0, TT1, T0, T1> (a: 'TT0 [TupleRef2<'T0, 'T1>]) != (b: 'TT1 [TupleRef2<'T0, 'T1>]) -> Bool {
+    return a.as_ref().get_0() != b.as_ref().get_0() || a.as_ref().get_1() != b.as_ref().get_1();
+}
+
+// Tuples of size 3
+
+interface TupleRef3<T0, T1, T2> {
+    fn as_ref(t: Self) -> &('T0, 'T1, 'T2);
+}
+
+fn<T0, T1, T2> as_ref(t: ('T0, 'T1, 'T2)) -> &('T0, 'T1, 'T2) {
+    return t.demut();
+}
+
+fn<T0, T1, T2> as_ref(t: @('T0, 'T1, 'T2)) -> &('T0, 'T1, 'T2) {
+    return t.demut();
+}
+
+fn<T0, T1, T2> as_ref(t: &('T0, 'T1, 'T2)) -> &('T0, 'T1, 'T2) {
+    return t;
+}
+
+implement<T0, T1, T2> TupleRef3<'T0, 'T1, 'T2> for ('T0, 'T1, 'T2);
+implement<T0, T1, T2> TupleRef3<'T0, 'T1, 'T2> for &('T0, 'T1, 'T2);
+implement<T0, T1, T2> TupleRef3<'T0, 'T1, 'T2> for @('T0, 'T1, 'T2);
+
+op<TT0, TT1, T0, T1, T2> (a: 'TT0 [TupleRef3<'T0, 'T1, 'T2>]) == (b: 'TT1 [TupleRef3<'T0, 'T1, 'T2>]) -> Bool {
+    return a.as_ref().get_0() == b.as_ref().get_0() && a.as_ref().get_1() == b.as_ref().get_1() && a.as_ref().get_2() == b.as_ref().get_2();
+}
+
+op<TT0, TT1, T0, T1, T2> (a: 'TT0 [TupleRef3<'T0, 'T1, 'T2>]) != (b: 'TT1 [TupleRef3<'T0, 'T1, 'T2>]) -> Bool {
+    return a.as_ref().get_0() != b.as_ref().get_0() || a.as_ref().get_1() != b.as_ref().get_1() || a.as_ref().get_2() != b.as_ref().get_2();
+}
+
+// Tuples of size 4
+
+interface TupleRef4<T0, T1, T2, T3> {
+    fn as_ref(t: Self) -> &('T0, 'T1, 'T2, 'T3);
+}
+
+fn<T0, T1, T2, T3> as_ref(t: ('T0, 'T1, 'T2, 'T3)) -> &('T0, 'T1, 'T2, 'T3) {
+    return t.demut();
+}
+
+fn<T0, T1, T2, T3> as_ref(t: @('T0, 'T1, 'T2, 'T3)) -> &('T0, 'T1, 'T2, 'T3) {
+    return t.demut();
+}
+
+fn<T0, T1, T2, T3> as_ref(t: &('T0, 'T1, 'T2, 'T3)) -> &('T0, 'T1, 'T2, 'T3) {
+    return t;
+}
+
+implement<T0, T1, T2, T3> TupleRef4<'T0, 'T1, 'T2, 'T3> for ('T0, 'T1, 'T2, 'T3);
+implement<T0, T1, T2, T3> TupleRef4<'T0, 'T1, 'T2, 'T3> for &('T0, 'T1, 'T2, 'T3);
+implement<T0, T1, T2, T3> TupleRef4<'T0, 'T1, 'T2, 'T3> for @('T0, 'T1, 'T2, 'T3);
+
+op<TT0, TT1, T0, T1, T2, T3> (a: 'TT0 [TupleRef4<'T0, 'T1, 'T2, 'T3>]) == (b: 'TT1 [TupleRef4<'T0, 'T1, 'T2, 'T3>]) -> Bool {
+    return a.as_ref().get_0() == b.as_ref().get_0() && a.as_ref().get_1() == b.as_ref().get_1() && 
+           a.as_ref().get_2() == b.as_ref().get_2() && a.as_ref().get_3() == b.as_ref().get_3();
+}
+
+op<TT0, TT1, T0, T1, T2, T3> (a: 'TT0 [TupleRef4<'T0, 'T1, 'T2, 'T3>]) != (b: 'TT1 [TupleRef4<'T0, 'T1, 'T2, 'T3>]) -> Bool {
+    return a.as_ref().get_0() != b.as_ref().get_0() || a.as_ref().get_1() != b.as_ref().get_1() || 
+           a.as_ref().get_2() != b.as_ref().get_2() || a.as_ref().get_3() != b.as_ref().get_3();
+}
