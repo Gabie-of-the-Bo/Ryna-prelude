@@ -28,6 +28,26 @@ op<TT0, TT1, T0, T1> (a: 'TT0 [TupleRef2<'T0, 'T1>]) != (b: 'TT1 [TupleRef2<'T0,
     return a.as_ref().get_0() != b.as_ref().get_0() || a.as_ref().get_1() != b.as_ref().get_1();
 }
 
+fn<T0, T1> print(t: &('T0 [Printable], 'T1 [Printable])) {
+    print("(");
+    print(t.get_0().cfwd<'T0>());
+    print(", ");
+    print(t.get_1().cfwd<'T1>());
+    print(")");
+}
+
+fn<T0, T1> print(t: @('T0 [Printable], 'T1 [Printable])) {
+    print(t.demut());
+}
+
+fn<T0, T1> print(t: ('T0 [Printable], 'T1 [Printable])) {
+    print(t.demut());
+}
+
+implement<T0, T1> Printable for ('T0 [Printable], 'T1 [Printable]);
+implement<T0, T1> Printable for &('T0 [Printable], 'T1 [Printable]);
+implement<T0, T1> Printable for @('T0 [Printable], 'T1 [Printable]);
+
 // Tuples of size 3
 
 interface TupleRef3<T0, T1, T2> {
@@ -57,6 +77,28 @@ op<TT0, TT1, T0, T1, T2> (a: 'TT0 [TupleRef3<'T0, 'T1, 'T2>]) == (b: 'TT1 [Tuple
 op<TT0, TT1, T0, T1, T2> (a: 'TT0 [TupleRef3<'T0, 'T1, 'T2>]) != (b: 'TT1 [TupleRef3<'T0, 'T1, 'T2>]) -> Bool {
     return a.as_ref().get_0() != b.as_ref().get_0() || a.as_ref().get_1() != b.as_ref().get_1() || a.as_ref().get_2() != b.as_ref().get_2();
 }
+
+fn<T0, T1, T2> print(t: &('T0 [Printable], 'T1 [Printable], 'T2 [Printable])) {
+    print("(");
+    print(t.get_0().cfwd<'T0>());
+    print(", ");
+    print(t.get_1().cfwd<'T1>());
+    print(", ");
+    print(t.get_2().cfwd<'T2>());
+    print(")");
+}
+
+fn<T0, T1, T2> print(t: @('T0 [Printable], 'T1 [Printable], 'T2 [Printable])) {
+    print(t.demut());
+}
+
+fn<T0, T1, T2> print(t: ('T0 [Printable], 'T1 [Printable], 'T2 [Printable])) {
+    print(t.demut());
+}
+
+implement<T0, T1, T2> Printable for ('T0 [Printable], 'T1 [Printable], 'T2 [Printable]);
+implement<T0, T1, T2> Printable for &('T0 [Printable], 'T1 [Printable], 'T2 [Printable]);
+implement<T0, T1, T2> Printable for @('T0 [Printable], 'T1 [Printable], 'T2 [Printable]);
 
 // Tuples of size 4
 
@@ -89,3 +131,27 @@ op<TT0, TT1, T0, T1, T2, T3> (a: 'TT0 [TupleRef4<'T0, 'T1, 'T2, 'T3>]) != (b: 'T
     return a.as_ref().get_0() != b.as_ref().get_0() || a.as_ref().get_1() != b.as_ref().get_1() || 
            a.as_ref().get_2() != b.as_ref().get_2() || a.as_ref().get_3() != b.as_ref().get_3();
 }
+
+fn<T0, T1, T2, T3> print(t: &('T0 [Printable], 'T1 [Printable], 'T2 [Printable], 'T3 [Printable])) {
+    print("(");
+    print(t.get_0().cfwd<'T0>());
+    print(", ");
+    print(t.get_1().cfwd<'T1>());
+    print(", ");
+    print(t.get_2().cfwd<'T2>());
+    print(", ");
+    print(t.get_3().cfwd<'T3>());
+    print(")");
+}
+
+fn<T0, T1, T2, T3> print(t: @('T0 [Printable], 'T1 [Printable], 'T2 [Printable], 'T3 [Printable])) {
+    print(t.demut());
+}
+
+fn<T0, T1, T2, T3> print(t: ('T0 [Printable], 'T1 [Printable], 'T2 [Printable], 'T3 [Printable])) {
+    print(t.demut());
+}
+
+implement<T0, T1, T2, T3> Printable for ('T0 [Printable], 'T1 [Printable], 'T2 [Printable], 'T3 [Printable]);
+implement<T0, T1, T2, T3> Printable for &('T0 [Printable], 'T1 [Printable], 'T2 [Printable], 'T3 [Printable]);
+implement<T0, T1, T2, T3> Printable for @('T0 [Printable], 'T1 [Printable], 'T2 [Printable], 'T3 [Printable]);
