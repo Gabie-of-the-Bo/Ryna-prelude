@@ -195,10 +195,23 @@ fn<T> parse_int(str: 'T [StringRef]) -> Int {
     let res = 0;
     let str_cp = str.as_ref().code_points();
 
+    let negative = false;
+    let pos = 0;
+
     for i in str_cp {
+        if pos == 0 && i == '-' {
+            negative = true;
+        }
+
         if i >= 48 && i <= 57 {
             res = (res * 10) + (i - 48);
         }
+
+        pos.inc();
+    }
+
+    if negative {
+        res = res * -1;
     }
 
     return move(res);
