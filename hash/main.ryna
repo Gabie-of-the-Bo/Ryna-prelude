@@ -1,4 +1,5 @@
 import * from tuples;
+import * from string_extensions;
 
 interface Hashable {
     fn hash(obj: Self) -> Int;
@@ -18,6 +19,8 @@ fn hash(n: Bool) -> Int {
 
 implement Hashable for Int;
 implement Hashable for Bool;
+
+// Tuple hashes
 
 fn combine_hashes(a: Int, b: Int) -> Int {
     let res = 17;
@@ -58,3 +61,17 @@ fn<T1, T2, T3, T4> hash(obj: ('T1 [Hashable], 'T2 [Hashable], 'T3 [Hashable], 'T
 implement<T1, T2> Hashable for ('T1 [Hashable], 'T2 [Hashable]);
 implement<T1, T2, T3> Hashable for ('T1 [Hashable], 'T2 [Hashable], 'T3 [Hashable]);
 implement<T1, T2, T3, T4> Hashable for ('T1 [Hashable], 'T2 [Hashable], 'T3 [Hashable], 'T4 [Hashable]);
+
+// String hash
+
+fn hash(s: String) -> Int {
+    let res = 0;
+
+    for c in s.code_points() {
+        res = combine_hashes(*res, *c);
+    }
+
+    return move(res);
+}
+
+implement Hashable for String;

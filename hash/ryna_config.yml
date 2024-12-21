@@ -1,10 +1,13 @@
 ---
 module_name: hash
 version: 0.1.0
-hash: a561abfd53041af5dac5fcde0c9dac98
+hash: 6d5460342f0f64731b71f9a6375245e6
 module_paths:
   - "${MODULES_PATH}"
 modules:
   tuples:
     path: "${MODULES_PATH}/prelude/tuples"
+    version: 0.1.0
+  string_extensions:
+    path: "${MODULES_PATH}/prelude/string_extensions"
     version: 0.1.0
