@@ -1,3 +1,19 @@
+fn<T> min(a: 'T, b: 'T) -> 'T {
+    if a < b {
+        return cfwd<'T>(a);
+    }
+
+    return cfwd<'T>(b);
+}
+
+fn<T> max(a: 'T, b: 'T) -> 'T {
+    if a < b {
+        return cfwd<'T>(b);
+    }
+
+    return cfwd<'T>(a);
+}
+
 fn droot(n: Int) -> Int {
     if n < 10 {
         return move(n);
