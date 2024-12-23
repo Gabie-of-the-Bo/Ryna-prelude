@@ -22,6 +22,69 @@ implement StringRef for String;
 implement StringRef for &String;
 implement StringRef for @String;
 
+// String order
+op<T, G> (a: 'T [StringRef]) < (b: 'G [StringRef]) -> Bool {
+    let it_a = a.as_ref().code_points();
+    let it_b = b.as_ref().code_points();
+
+    while !it_a.is_consumed() && !it_b.is_consumed() {
+        let char_a = it_a.next();
+        let char_b = it_b.next();
+
+        if char_a < char_b {
+            return true;
+        
+        } else if char_a > char_b {
+            return false;
+        }
+    }
+
+    if !it_a.is_consumed() {
+        return false;
+    }
+
+    if !it_b.is_consumed() {
+        return true;
+    }
+
+    return false;
+}
+
+op<T, G> (a: 'T [StringRef]) <= (b: 'G [StringRef]) -> Bool {
+    let it_a = a.as_ref().code_points();
+    let it_b = b.as_ref().code_points();
+
+    while !it_a.is_consumed() && !it_b.is_consumed() {
+        let char_a = it_a.next();
+        let char_b = it_b.next();
+
+        if char_a < char_b {
+            return true;
+        
+        } else if char_a > char_b {
+            return false;
+        }
+    }
+
+    if !it_a.is_consumed() {
+        return false;
+    }
+
+    if !it_b.is_consumed() {
+        return true;
+    }
+
+    return true;
+}
+
+op<T, G> (a: 'T [StringRef]) > (b: 'G [StringRef]) -> Bool {
+    return !(a.as_ref() <= b.as_ref());
+}
+
+op<T, G> (a: 'T [StringRef]) >= (b: 'G [StringRef]) -> Bool {
+    return !(a.as_ref() < b.as_ref());
+}
+
 // Code point iterator
 
 @doc(
