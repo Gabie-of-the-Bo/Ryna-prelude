@@ -199,7 +199,7 @@ fn<T> iterator(set: &HashSet<'T>) -> HashSetIterator<'T> {
         idx.inc();
     }
 
-    return HashSetIterator(set, 0, 0);
+    return HashSetIterator(set, set.buckets.len(), 0);
 }
 
 fn<T> iterator(set: @HashSet<'T>) -> HashSetIterator<'T> {

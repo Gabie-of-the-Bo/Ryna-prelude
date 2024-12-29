@@ -281,7 +281,7 @@ fn<K, V> iterator(map: &HashMap<'K, 'V>) -> HashMapIterator<'K, 'V> {
         idx.inc();
     }
 
-    return HashMapIterator(map, 0, 0);
+    return HashMapIterator(map, map.buckets.len(), 0);
 }
 
 fn<K, V> iterator(map: @HashMap<'K, 'V>) -> HashMapIterator<'K, 'V> {
