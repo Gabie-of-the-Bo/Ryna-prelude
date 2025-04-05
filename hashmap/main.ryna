@@ -1,5 +1,5 @@
-import * from hash;
-import fn { iterator, next, is_consumed, range } from range;
+import * from /hash/main;
+import fn { iterator, next, is_consumed, range } from /range/main;
 
 // Syntax definition
 

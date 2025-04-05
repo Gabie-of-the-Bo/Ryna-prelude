@@ -1,4 +1,4 @@
-import * from array_extensions;
+import * from /array_extensions/main;
 
 // StringRef interface
 

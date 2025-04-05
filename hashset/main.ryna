@@ -1,6 +1,6 @@
-import * from hash;
-import fn { iterator, next, is_consumed, range } from range;
-import * from array_extensions;
+import * from /hash/main;
+import fn { iterator, next, is_consumed, range } from /range/main;
+import * from /array_extensions/main;
 
 // Syntax
 

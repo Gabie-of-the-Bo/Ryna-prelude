@@ -1,5 +1,5 @@
-import * from tuples;
-import * from string_extensions;
+import * from /tuples/main;
+import * from /string_extensions/main;
 
 interface Hashable {
     fn hash(obj: Self) -> Int;

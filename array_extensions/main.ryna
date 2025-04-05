@@ -1,4 +1,4 @@
-import * from range;
+import * from /range/main;
 
 // ArrayRef interface for generic definitions
 

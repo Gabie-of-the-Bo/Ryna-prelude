@@ -1,4 +1,4 @@
-import fn { range, iterator, next, is_consumed } from range;
+import fn { range, iterator, next, is_consumed } from /range/main;
 
 fn is_prime(n: Int) -> Bool {
     if n <= 1 {
